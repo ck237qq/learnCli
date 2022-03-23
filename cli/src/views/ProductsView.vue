@@ -1,10 +1,14 @@
 <template>
+<div class="text-end">
+  <button class="btn btn-primary" type="button" @click="openModel ()">新增使用者</button>
+</div>
   <table class="table mt-4">
     <thead>
       <tr>
         <th width="120">項次</th>
         <th width="120">姓名</th>
         <th width="120">權限</th>
+        <th width="300">信箱</th>
         <th>備註</th>
         <th width="100">是否啟用</th>
         <th width="200">編輯</th>
@@ -16,6 +20,7 @@
         <td>{{ UserInfoGetDto.userId }}</td>
         <td>{{ UserInfoGetDto.userName }}</td>
         <td class="text-right">{{ UserInfoGetDto.groupId }}</td>
+        <td>{{ UserInfoGetDto.loginName }}</td>
         <td class="text-right"></td>
         <td>
           <span class="text-success" v-if="UserInfoGetDto.isEnabled">啟用</span>
@@ -31,33 +36,64 @@
       </template>
     </tbody>
   </table>
+  <product-model ref="productModal" :product="tempProduct" @update-product="updateProduct"></product-model>
 </template>
 
 <script>
+import productModel from '../components/ProductModal.vue'
+
 export default {
   data () {
     return {
-      UserInfoGetDto: ''
+      UserInfoGetDto: {},
+      tempProduct: {}
     }
+  },
+  components: {
+    productModel
   },
   created () {
-    const myCookie = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, '$1')
-    const api = `${process.env.VUE_APP_API}` + '/Info/GetUsers'
-    const config = {
-      headers: {
-        Authorization: myCookie
-      }
-    }
-    this.$http.get(api, config).then((ResponseDto) => {
-      this.UserInfoGetDto = ResponseDto.data.data
-    })
+    this.getProducts()
   },
   methods: {
+    getHeaders () {
+      const myCookie = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, '$1')
+      const config = {
+        headers: {
+          Authorization: myCookie
+        }
+      }
+      return config
+    },
+    getProducts () {
+      const api = `${process.env.VUE_APP_API}` + '/Info/GetUsers'
+      this.$http.get(api, this.getHeaders()).then((ResponseDto) => {
+        this.UserInfoGetDto = ResponseDto.data.data
+      })
+    },
     editUser (userId) {
       console.log(userId)
     },
     delUser (userId) {
       console.log(userId)
+    },
+    openModel () {
+      this.tempProduct = {
+        groupId: '訪客',
+        isEnabled: true
+      }
+      const productComponent = this.$refs.productModal
+      productComponent.showModal()
+    },
+    updateProduct (item) {
+      this.tempProduct = item
+      const api = `${process.env.VUE_APP_API}` + '/Info/AddUsers'
+      const productComponent = this.$refs.productModal
+      this.$http.post(api, this.tempProduct, this.getHeaders()).then((ResponseDto) => {
+        console.log(ResponseDto.data)
+      })
+      productComponent.hideModal()
+      this.getProducts()
     }
   }
 }

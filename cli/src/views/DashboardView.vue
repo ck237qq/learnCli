@@ -7,14 +7,6 @@
 import navbarView from '../components/navbarView'
 
 export default {
-  data () {
-    return {
-      LogInUserDto: {
-        loginName: '',
-        loginPwd: ''
-      }
-    }
-  },
   components: {
     navbarView
   },
@@ -26,7 +18,7 @@ export default {
       }
     }
     const api = `${process.env.VUE_APP_API}` + '/Info/IsToken'
-    this.$http.post(api, this.LogInUserDto, config).then((ResponseDto) => {
+    this.$http.get(api, config).then((ResponseDto) => {
       if (!ResponseDto.data.data) {
         this.$router.push('login')
       }

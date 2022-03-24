@@ -1,6 +1,6 @@
 <template>
 <div class="text-end">
-  <button class="btn btn-primary" type="button" @click="openModel ()">新增使用者</button>
+  <button class="btn btn-primary" type="button" @click="openModel (true)">新增使用者</button>
 </div>
   <table class="table mt-4">
     <thead>
@@ -28,7 +28,7 @@
         </td>
         <td>
           <div class="btn-group">
-            <button class="btn btn-outline-primary btn-sm" @click="editUser(UserInfoGetDto.userId)">編輯</button>
+            <button class="btn btn-outline-primary btn-sm" @click="openModel(false ,UserInfoGetDto)">編輯</button>
             <button class="btn btn-outline-danger btn-sm" @click="delUser(UserInfoGetDto.userId)">刪除</button>
           </div>
         </td>
@@ -46,7 +46,8 @@ export default {
   data () {
     return {
       UserInfoGetDto: {},
-      tempProduct: {}
+      tempProduct: {},
+      isNew: false
     }
   },
   components: {
@@ -71,29 +72,40 @@ export default {
         this.UserInfoGetDto = ResponseDto.data.data
       })
     },
-    editUser (userId) {
-      console.log(userId)
-    },
     delUser (userId) {
       console.log(userId)
     },
-    openModel () {
-      this.tempProduct = {
-        groupId: '訪客',
-        isEnabled: true
+    openModel (isNew, UserInfoGetDto) {
+      this.tempProduct = {}
+      if (isNew) {
+        this.tempProduct = {
+          groupId: '訪客',
+          isEnabled: true
+        }
+      } else {
+        this.tempProduct = { ...UserInfoGetDto }
       }
+      this.isNew = isNew
       const productComponent = this.$refs.productModal
       productComponent.showModal()
     },
     updateProduct (item) {
       this.tempProduct = item
-      const api = `${process.env.VUE_APP_API}` + '/Info/AddUsers'
       const productComponent = this.$refs.productModal
-      this.$http.post(api, this.tempProduct, this.getHeaders()).then((ResponseDto) => {
+      let httpMethod = ''
+      let api = ''
+      if (this.isNew) {
+        api = `${process.env.VUE_APP_API}` + '/Info/AddUser'
+        httpMethod = 'post'
+      } else {
+        api = `${process.env.VUE_APP_API}` + '/Info/EditUser'
+        httpMethod = 'put'
+      }
+      this.$http[httpMethod](api, this.tempProduct, this.getHeaders()).then((ResponseDto) => {
         console.log(ResponseDto.data)
+        productComponent.hideModal()
+        this.getProducts()
       })
-      productComponent.hideModal()
-      this.getProducts()
     }
   }
 }

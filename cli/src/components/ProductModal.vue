@@ -14,30 +14,15 @@
       <div class="row">
         <div class="col-sm-4">
           <div class="mb-3">
-            <label for="image" class="form-label">輸入圖片網址</label>
-            <input type="text" class="form-control" id="image"
-                    placeholder="請輸入圖片連結">
-          </div>
-          <div class="mb-3">
-            <label for="customFile" class="form-label">或 上傳圖片
+            <label for="customFile" class="form-label">上傳照片
               <i class="fas fa-spinner fa-spin"></i>
             </label>
-            <input type="file" id="customFile" class="form-control">
+            <input type="file" id="customFile" class="form-control" ref="fileInput" @change="uploadFile">
           </div>
-          <img class="img-fluid" alt="">
           <div class="mt-5">
-            <div class="mb-3 input-group" >
-              <input type="url" class="form-control form-control"
-                      placeholder="請輸入連結">
-              <button type="button" class="btn btn-outline-danger">
-                移除
-              </button>
-            </div>
-            <div>
-              <button class="btn btn-outline-primary btn-sm d-block w-100">
-                新增圖片
-              </button>
-            </div>
+            <h5 class="modal-title" id="exampleModalLabel">預覽照片</h5>
+            <img class="img-fluid" src="https://i.imgur.com/86AUKFe.png" v-if="tempProduct.userPic === undefined">
+            <img class="img-fluid" :src="'data:image/jpeg;base64,' + tempProduct.userPic" v-else>
           </div>
         </div>
         <div class="col-sm-8">
@@ -113,11 +98,13 @@ export default {
   data () {
     return {
       modal: {},
-      tempProduct: {}
+      tempProduct: {},
+      formData: ''
     }
   },
   methods: {
     showModal () {
+      console.log('?' + this.tempProduct.userPic)
       this.modal.show()
     },
     hideModal () {
@@ -126,6 +113,16 @@ export default {
     newTempProduct () {
       this.tempProduct = {}
       this.hideModal()
+    },
+    uploadFile () {
+      const api = `${process.env.VUE_APP_API}` + '/Info/pic'
+      const uploadFile = this.$refs.fileInput.files[0]
+      const formData = new FormData()
+      formData.append('userPic', uploadFile)
+      this.$http.put(api, formData).then((ResponseDto) => {
+        this.tempProduct.userPic = ResponseDto.data.data.userPic
+        this.tempProduct.picId = ResponseDto.data.data.picId
+      })
     }
   },
   mounted () {

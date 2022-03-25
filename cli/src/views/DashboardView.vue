@@ -20,7 +20,7 @@ export default {
     const api = `${process.env.VUE_APP_API}` + '/Info/IsToken'
     this.$http.get(api, config).then((ResponseDto) => {
       if (!ResponseDto.data.data) {
-        this.$router.push('login')
+        this.$router.push('/')
       }
     })
   }

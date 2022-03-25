@@ -16,7 +16,7 @@
           />
         </div>
         <div class="mb-2">
-          <label for="inputPassword" class="sr-only">請輸入您要申請的密碼</label>
+          <label for="inputPassword" class="sr-only">請輸入您要的密碼</label>
           <input
             type="password"
             id="inputPassword"

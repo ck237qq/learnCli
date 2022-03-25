@@ -84,6 +84,10 @@ export default {
         }
       } else {
         this.tempProduct = { ...UserInfoGetDto }
+        const api = `${process.env.VUE_APP_API}` + '/Info/GetPic/' + UserInfoGetDto.picId
+        this.$http.get(api, this.getHeaders()).then((ResponseDto) => {
+          this.tempProduct.userPic = ResponseDto.data.data.userPic
+        })
       }
       this.isNew = isNew
       const productComponent = this.$refs.productModal
@@ -102,7 +106,6 @@ export default {
         httpMethod = 'put'
       }
       this.$http[httpMethod](api, this.tempProduct, this.getHeaders()).then((ResponseDto) => {
-        console.log(ResponseDto.data)
         productComponent.hideModal()
         this.getProducts()
       })

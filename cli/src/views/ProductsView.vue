@@ -29,7 +29,7 @@
         <td>
           <div class="btn-group">
             <button class="btn btn-outline-primary btn-sm" @click="openModel(false ,UserInfoGetDto)">編輯</button>
-            <button class="btn btn-outline-danger btn-sm" @click="delUser(UserInfoGetDto.userId)">刪除</button>
+            <button class="btn btn-outline-danger btn-sm" @click="delUser()">刪除</button>
           </div>
         </td>
       </tr>
@@ -41,18 +41,21 @@
 
 <script>
 import productModel from '../components/ProductModal.vue'
+import ModalMixin from '../mixins/ModalMixin'
 
 export default {
   data () {
     return {
       UserInfoGetDto: {},
       tempProduct: {},
-      isNew: false
+      isNew: false,
+      message: {}
     }
   },
   components: {
     productModel
   },
+  mixins: [ModalMixin],
   created () {
     this.getProducts()
   },
@@ -72,8 +75,9 @@ export default {
         this.UserInfoGetDto = ResponseDto.data.data
       })
     },
-    delUser (userId) {
-      console.log(userId)
+    delUser () {
+      this.getToastMsg()
+      this.emitter.emit('push-message', this.message)
     },
     openModel (isNew, UserInfoGetDto) {
       this.tempProduct = {}
@@ -108,6 +112,8 @@ export default {
       this.$http[httpMethod](api, this.tempProduct, this.getHeaders()).then((ResponseDto) => {
         productComponent.hideModal()
         this.getProducts()
+        this.getToastMsg(ResponseDto.data)
+        this.emitter.emit('push-message', this.message)
       })
     }
   }

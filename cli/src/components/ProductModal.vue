@@ -104,7 +104,6 @@ export default {
   },
   methods: {
     showModal () {
-      console.log('?' + this.tempProduct.userPic)
       this.modal.show()
     },
     hideModal () {

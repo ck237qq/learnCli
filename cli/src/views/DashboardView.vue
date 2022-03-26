@@ -1,14 +1,22 @@
 <template>
   <navbar-view/>
   <router-view/>
+  <toast-messages/>
 </template>
 
 <script>
 import navbarView from '../components/navbarView'
-
+import emitter from '../methods/emitter.js'
+import ToastMessages from '../components/ToastMessages.vue'
 export default {
   components: {
-    navbarView
+    navbarView,
+    ToastMessages
+  },
+  provide () {
+    return {
+      emitter
+    }
   },
   created () {
     const myCookie = document.cookie.replace(/(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/, '$1')

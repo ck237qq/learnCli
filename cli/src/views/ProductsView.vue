@@ -1,4 +1,5 @@
 <template>
+<loading-api :active="isLoading"/>
 <div class="text-end">
   <button class="btn btn-primary" type="button" @click="openModel (true)">新增使用者</button>
 </div>
@@ -29,7 +30,7 @@
         <td>
           <div class="btn-group">
             <button class="btn btn-outline-primary btn-sm" @click="openModel(false ,UserInfoGetDto)">編輯</button>
-            <button class="btn btn-outline-danger btn-sm" @click="delUser()">刪除</button>
+            <button class="btn btn-outline-danger btn-sm" @click="delUser(UserInfoGetDto.userId)">刪除</button>
           </div>
         </td>
       </tr>
@@ -42,13 +43,13 @@
 <script>
 import productModel from '../components/ProductModal.vue'
 import ModalMixin from '../mixins/ModalMixin'
-
 export default {
   data () {
     return {
       UserInfoGetDto: {},
       tempProduct: {},
       isNew: false,
+      isLoading: false,
       message: {}
     }
   },
@@ -71,13 +72,19 @@ export default {
     },
     getProducts () {
       const api = `${process.env.VUE_APP_API}` + '/Info/GetUsers'
+      this.isLoading = true
       this.$http.get(api, this.getHeaders()).then((ResponseDto) => {
+        this.isLoading = false
         this.UserInfoGetDto = ResponseDto.data.data
       })
     },
-    delUser () {
-      this.getToastMsg()
-      this.emitter.emit('push-message', this.message)
+    delUser (userId) {
+      const api = `${process.env.VUE_APP_API}` + '/Info/DelUser/' + userId
+      this.$http.delete(api, this.getHeaders()).then((ResponseDto) => {
+        this.getProducts()
+        this.getToastMsg(ResponseDto.data)
+        this.emitter.emit('push-message', this.message)
+      })
     },
     openModel (isNew, UserInfoGetDto) {
       this.tempProduct = {}

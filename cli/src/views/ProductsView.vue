@@ -16,9 +16,9 @@
       </tr>
     </thead>
     <tbody>
-      <template v-for="(UserInfoGetDto, key) in UserInfoGetDto" :key="key">
+      <template v-for="(UserInfoGetDto, key) in userInfoFindDto.userInfoGetDtoList" :key="key">
       <tr>
-        <td>{{ UserInfoGetDto.userId }}</td>
+        <td>{{((this.userInfoFindDto.currentPage-1) * 10) + key + 1 }}</td>
         <td>{{ UserInfoGetDto.userName }}</td>
         <td class="text-right">{{ UserInfoGetDto.groupId }}</td>
         <td>{{ UserInfoGetDto.loginName }}</td>
@@ -38,15 +38,18 @@
     </tbody>
   </table>
   <product-model ref="productModal" :product="tempProduct" @update-product="updateProduct"></product-model>
+  <pagination :pages="userInfoFindDto" @emit-page="getProducts"/>
 </template>
 
 <script>
+import Pagination from '../components/PaginationView.vue'
 import productModel from '../components/ProductModal.vue'
 import ModalMixin from '../mixins/ModalMixin'
 export default {
   data () {
     return {
-      UserInfoGetDto: {},
+      userInfoFindDto: {},
+      pagination: {},
       tempProduct: {},
       isNew: false,
       isLoading: false,
@@ -54,7 +57,8 @@ export default {
     }
   },
   components: {
-    productModel
+    productModel,
+    Pagination
   },
   mixins: [ModalMixin],
   created () {
@@ -70,12 +74,12 @@ export default {
       }
       return config
     },
-    getProducts () {
-      const api = `${process.env.VUE_APP_API}` + '/Info/GetUsers'
+    getProducts (page = 1) {
+      const api = `${process.env.VUE_APP_API}` + '/Info/GetUsers/' + page
       this.isLoading = true
       this.$http.get(api, this.getHeaders()).then((ResponseDto) => {
         this.isLoading = false
-        this.UserInfoGetDto = ResponseDto.data.data
+        this.userInfoFindDto = ResponseDto.data.data
       })
     },
     delUser (userId) {

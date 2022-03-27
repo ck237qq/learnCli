@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import 'bootstrap/dist/js/bootstrap.bundle'
+
 export default {
   methods: {
     logout () {

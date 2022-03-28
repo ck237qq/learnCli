@@ -4,7 +4,7 @@
   <div class="modal-content border-0">
     <div class="modal-header bg-dark text-white">
       <h5 class="modal-title" id="exampleModalLabel">
-        <span v-if="tempProduct.userId === null">新增使用者</span>
+        <span v-if="this.tempProduct.isNew">新增使用者</span>
         <span v-else>編輯使用者</span>
       </h5>
       <button type="button" class="btn-close"
@@ -17,7 +17,7 @@
             <label for="customFile" class="form-label">上傳照片
               <i class="fas fa-spinner fa-spin"></i>
             </label>
-            <input type="file" id="customFile" class="form-control" ref="fileInput" @change="uploadFile">
+            <input type="file" id="customFile" class="form-control" ref="fileInput" @change.prevent="uploadFile">
           </div>
           <div class="mt-5">
             <h5 class="modal-title" id="exampleModalLabel">預覽照片</h5>
@@ -93,6 +93,7 @@ export default {
   watch: {
     product () {
       this.tempProduct = this.product
+      console.log(this.tempProduct.isNew)
     }
   },
   data () {
@@ -121,6 +122,7 @@ export default {
       this.$http.put(api, formData).then((ResponseDto) => {
         this.tempProduct.userPic = ResponseDto.data.data.userPic
         this.tempProduct.picId = ResponseDto.data.data.picId
+        this.$refs.fileInput = {}
       })
     }
   },

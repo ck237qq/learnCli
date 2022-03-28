@@ -62,6 +62,12 @@ export default {
   },
   mixins: [ModalMixin],
   created () {
+    const api = `${process.env.VUE_APP_API}` + '/Info/IsToken'
+    this.$http.get(api, this.getHeaders()).then((ResponseDto) => {
+      if (!ResponseDto.data.data) {
+        this.$router.push('/login')
+      }
+    })
     this.getProducts()
   },
   methods: {
@@ -95,14 +101,17 @@ export default {
       if (isNew) {
         this.tempProduct = {
           groupId: '訪客',
-          isEnabled: true
+          isEnabled: true,
+          isNew: isNew
         }
       } else {
         this.tempProduct = { ...UserInfoGetDto }
-        const api = `${process.env.VUE_APP_API}` + '/Info/GetPic/' + UserInfoGetDto.picId
-        this.$http.get(api, this.getHeaders()).then((ResponseDto) => {
-          this.tempProduct.userPic = ResponseDto.data.data.userPic
-        })
+        if (UserInfoGetDto.picId != null) {
+          const api = `${process.env.VUE_APP_API}` + '/Info/GetPic/' + UserInfoGetDto.picId
+          this.$http.get(api, this.getHeaders()).then((ResponseDto) => {
+            this.tempProduct.userPic = ResponseDto.data.data.userPic
+          })
+        }
       }
       this.isNew = isNew
       const productComponent = this.$refs.productModal

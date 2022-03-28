@@ -1,5 +1,4 @@
 <template>
-  <loading-api :active="isLoading"/>
   <div class="container mt-5">
     <form class="row justify-content-center" @submit.prevent="signIn">
       <div class="col-md-6">
@@ -52,9 +51,7 @@ export default {
   methods: {
     signIn () {
       const api = `${process.env.VUE_APP_API}` + '/LogInUser'
-      this.isLoading = true
       this.$http.post(api, this.LogInUserDto).then((ResponseDto) => {
-        this.isLoading = false
         document.cookie = `token=${ResponseDto.data.data}`
         this.$router.push('products')
       })

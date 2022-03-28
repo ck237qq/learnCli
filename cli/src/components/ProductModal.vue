@@ -93,7 +93,6 @@ export default {
   watch: {
     product () {
       this.tempProduct = this.product
-      console.log(this.tempProduct.isNew)
     }
   },
   data () {
@@ -122,7 +121,6 @@ export default {
       this.$http.put(api, formData).then((ResponseDto) => {
         this.tempProduct.userPic = ResponseDto.data.data.userPic
         this.tempProduct.picId = ResponseDto.data.data.picId
-        this.$refs.fileInput = {}
       })
     }
   },
